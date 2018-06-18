@@ -2,9 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TheStack : MonoBehaviour
 {
+
+    public Text textScore;
+    public GameObject endPanel;
 
     private const float BOUNDS_SIZE = 3.5f;   //wielkosc kwadratu 
     private const float STACK_MOVING_SPEED = 5.0f;
@@ -50,6 +55,7 @@ public class TheStack : MonoBehaviour
             {
                 SpawnTile();
                 scoreCount++;
+                textScore.text = scoreCount.ToString();
             }
             else
             {
@@ -161,7 +167,15 @@ public class TheStack : MonoBehaviour
     private void EndGame()
     {
         Debug.Log("LOSE");
+        if(PlayerPrefs.GetInt("score") < scoreCount){
+            PlayerPrefs.SetInt("score", scoreCount);
+        }
         gameOver = true;
+        endPanel.SetActive(true);
         theStack[stackIndex].AddComponent<Rigidbody>();
+    }
+
+    public void OnButtonClick(string sceneName){
+        SceneManager.LoadScene(sceneName);
     }
 }
