@@ -7,34 +7,83 @@ using UnityEngine.SceneManagement;
 
 public class TheStack : MonoBehaviour
 {
-
+    /// <summary>
+    /// Zmienna odpowiedzialna za aktualny wynik gracza
+    /// </summary>
     public Text textScore;
+
+    /// <summary>
+    /// Obiekt odpowiedzialny za panel końcowy
+    /// </summary>
     public GameObject endPanel;
 
-    private const float BOUNDS_SIZE = 3.5f;   //wielkosc kwadratu 
+    /// <summary>
+    /// Zmienna odpowiedzialna za wielkość klocka
+    /// </summary>
+    private const float BOUNDS_SIZE = 3.5f;
+    /// <summary>
+    /// Zmienna, która decyduje o szybkości poruszania się naszego "stacku"
+    /// </summary>
     private const float STACK_MOVING_SPEED = 5.0f;
+    /// <summary>
+    /// Zmienna odpowiedzialna za margines błędu tak aby łatwiej było spasować elementy
+    /// </summary>
     private const float ERROR_MARGIN = 0.1f;
 
-
+    /// <summary>
+    /// Utworzenie zmiennej theStack, która będzie odpowiedzialna za nasze klocki
+    /// </summary>
     private GameObject[] theStack;
+    /// <summary>
+    /// Zmienna typu Vector2
+    /// </summary>
     private Vector2 stackBounds = new Vector2(BOUNDS_SIZE, BOUNDS_SIZE);
 
-    private int stackIndex;       //indeks elementu
-    private int scoreCount = 0;   //wynik
+    /// <summary>
+    /// Numer klocka
+    /// </summary>
+    private int stackIndex;   
+    /// <summary>
+    /// Wynik
+    /// </summary>
+    private int scoreCount = 0;
+    /// <summary>
+    /// Combo
+    /// </summary>
     private int combo = 0;
 
+    /// <summary>
+    /// Pozycja naszego "stacka"
+    /// </summary>
     private float tileTransition = 0.0f;        //pozcyja
-    private float tileSpeed = 2.5f;    //szybkosc poruszania kwadratu
-    private float secondaryPosition;   //update pozycji kwadratu
-
-    private bool isMovingOnX = true;    //zmiana poruszania kwadratu
+    /// <summary>
+    /// Szybkośc poruszania kwadratu
+    /// </summary>
+    private float tileSpeed = 2.5f;             //szybkosc poruszania kwadratu
+    /// <summary>
+    /// Update pozycji kwadratu
+    /// </summary>
+    private float secondaryPosition;            //update pozycji kwadratu
+    /// <summary>
+    /// Zmienna odpowiedzilna za zmiane poruszania kwadratu
+    /// </summary>
+    private bool isMovingOnX = true;            //zmiana poruszania kwadratu
+    /// <summary>
+    /// Zmienna sprawdzająca czy jest koniec gry
+    /// </summary>
     private bool gameOver = false;
 
     private Vector3 desiredPosition;
+    /// <summary>
+    /// Zmienna, dzięki której mamy zapamiętany ostatni klocek
+    /// </summary>
     private Vector3 lastTilePosition;
 
     // Use this for initialization
 
+    /// <summary>
+    /// Metoda startowa, która przypisuje nam obiekty do zmiennych w tablicy.
+    /// </summary>
     private void Start()
     {
         theStack = new GameObject[transform.childCount];
@@ -46,6 +95,9 @@ public class TheStack : MonoBehaviour
         stackIndex = transform.childCount - 1;
     }
 
+    /// <summary>
+    /// Metoda, która po naciśnieciu przycisku uruchamia inne metody odpowiedzialne za resztę gry.
+    /// </summary>
     // Update is called once per frame
     private void Update()
     {
@@ -68,6 +120,9 @@ public class TheStack : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, desiredPosition, STACK_MOVING_SPEED * Time.deltaTime);
     }
 
+    /// <summary>
+    /// Metoda, dzięki której nasz klocek porusza się po osi x i z.
+    /// </summary>
     private void MoveTile()
     {
         if (gameOver)
@@ -86,7 +141,9 @@ public class TheStack : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Metoda, która tworzy nowego klocka u góry. Wielkość jest zależna od ostatniego uciętego klocka
+    /// </summary>
     private void SpawnTile()
     {
         lastTilePosition = theStack[stackIndex].transform.localPosition;
@@ -95,11 +152,14 @@ public class TheStack : MonoBehaviour
         {
             stackIndex = transform.childCount - 1;
         }
-        desiredPosition = (Vector3.down) * scoreCount;
+        desiredPosition = (Vector3.down) * scoreCount;  //Shorthand for writing Vector3(0, -1, 0)
         theStack[stackIndex].transform.localPosition = new Vector3(0, scoreCount, 0);
         theStack[stackIndex].transform.localScale = new Vector3(stackBounds.x, 1, stackBounds.y);    //zmniejszenie kwadratu
     }
 
+    /// <summary>
+    /// Metoda, która sprawdza w którą strone porusza się klocek i w zależności od tego ucina go.
+    /// </summary>
     private bool PlaceTile()
     {
         Transform t = theStack[stackIndex].transform;
@@ -133,7 +193,7 @@ public class TheStack : MonoBehaviour
             if (Mathf.Abs(deltaZ) > ERROR_MARGIN)
             {
 
-                //cięcie kwadratu
+                //ciecie kwadratu
                 combo = 0;
                 stackBounds.y -= Mathf.Abs(deltaZ);
                 if (stackBounds.y <= 0)
@@ -164,6 +224,9 @@ public class TheStack : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Metoda która jest aktywowana po zakończeeniu rozgrywki. Aktualizuje wynik i włącza panel końcowy
+    /// </summary>
     private void EndGame()
     {
         Debug.Log("LOSE");
@@ -175,6 +238,10 @@ public class TheStack : MonoBehaviour
         theStack[stackIndex].AddComponent<Rigidbody>();
     }
 
+    /// <summary>
+    /// Metoda, która zmienia scenę na menu po naciśnięciu przycisku
+    /// </summary>
+    /// <param name="sceneName"></param>
     public void OnButtonClick(string sceneName){
         SceneManager.LoadScene(sceneName);
     }
